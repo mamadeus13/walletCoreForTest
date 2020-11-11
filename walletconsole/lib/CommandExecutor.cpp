@@ -114,6 +114,9 @@ bool CommandExecutor::executeOne(const string& cmd, const vector<string>& params
         _out << "Previous result is:  " << params[0] << endl;
         return false;
     }
+
+    if(cmd == "transaction"){ std::cout<< "loobadoobadoobdoob\n" ;   }
+
     if (cmd == "buffer") { _buffer.buffer(); return false; }
 
     if (cmd == "coins") { _coins.coins(); return false; }

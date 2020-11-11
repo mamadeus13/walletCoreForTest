@@ -36,11 +36,13 @@ void WalletConsole::init() {
 }
 
 void WalletConsole::loop() {
+    std::cout << "passed here " << std::endl ; 
     while (true) {
         _outst << "> ";
         string line;
         getline(_inst, line);
         Util::trimLeft(line);
+        std::cout<<line << std::endl; 
         if (line.length() == 0) { continue; }
         if (isExit(line)) {
             break;

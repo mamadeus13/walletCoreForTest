@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+
 
 project(TrustWalletCore)
 
@@ -33,6 +36,7 @@ include_directories(${PREFIX}/include)
 link_directories(${PREFIX}/lib)
 
 add_subdirectory(trezor-crypto)
+add_subdirectory(bin)
 
 macro(find_host_package)
   set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
