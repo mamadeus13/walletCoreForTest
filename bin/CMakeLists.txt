@@ -1,11 +1,14 @@
-file(GLOB_RECURSE test_stuff FirstTest.cpp )
+file(GLOB_RECURSE test_stuff *.cpp )
 
 add_executable(firstTest ${test_stuff})
 
 target_link_libraries(firstTest gtest_main TrezorCrypto walletconsolelib TrustWalletCore  protobuf) #Boost::boost walletconsolelib)
-target_include_directories(firstTest PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_include_directories(firstTest PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include ) 
 target_compile_options(firstTest PRIVATE "-Wall")
 
+# link_directories(${CMAKE_CURRENT_SOURCE_DIR}/.libs)
+
+# target_link_libraries(firstTest btc nspv)
 option(CODE_COVERAGE "Enable coverage reporting" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     # Add required flags (GCC & LLVM/Clang)

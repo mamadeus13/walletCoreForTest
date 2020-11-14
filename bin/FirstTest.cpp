@@ -19,23 +19,26 @@
 #include <gtest/gtest.h>
 #include <cassert>
 
+
+
+
 using namespace TW;
 using namespace TW::Bitcoin;
 
 int main () 
 {
-    auto coin = TWCoinTypeLitecoin;
-    auto ownAddress = "ltc1qt36tu30tgk35tyzsve6jjq3dnhu2rm8l8v5q00";
-    auto ownPrivateKey = "b820f41f96c8b7442f3260acd23b3897e1450b8c7c6580136a3c2d3a14e34674";
-    auto toAddress0 = "ltc1qgknskahmm6svn42e33gum5wc4dz44wt9vc76q4";
-    auto toAddress1 = "ltc1qulgtqdgxyd9nxnn5yxft6jykskz0ffl30nu32z";
-    auto utxo0Amount = 3'851'829;
-    auto toAmount0 = 1'000'000;
-    auto toAmount1 = 2'000'000;
+    auto coin = TWCoinTypeBitcoin;
+    auto ownAddress = "bc1q7yqq7l97pq9ra2f2gkf9s54y49re65ydgydy35";
+    auto ownPrivateKey = "f92378e54fc4e42091e3e508e604dc9a259ff4abe441c3d04b8f8ee97dc4540b";
+    auto toAddress0 = "bc1qphxqjzcq58eepq0s4w80ucxwg3n7d4hqxty5wn";
+    auto toAddress1 = "bc1q0d43anc6lkd52yjrw2f3qfl27tan29k8ukryd2";
+    auto utxo0Amount = 274'221;
+    auto toAmount0 = 174'221;
+    auto toAmount1 = 99'328;
 
     auto unsignedTx = Transaction(1, 0);
 
-    auto hash0 = parse_hex("bbe736ada63c4678025dff0ff24d5f38970a3e4d7a2f77808689ed68004f55fe");
+    auto hash0 = parse_hex("388b2d6d838db6e495a1eb1e31c95be09c7eb6dfc84ab3a43571ac7a230e2cb7");
     std::reverse(hash0.begin(), hash0.end());
     auto outpoint0 = TW::Bitcoin::OutPoint(hash0, 0);
     unsignedTx.inputs.emplace_back(outpoint0, Script(), UINT32_MAX);
@@ -50,12 +53,11 @@ int main ()
 
     Data unsignedData;
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::Segwit);
-        std::cout<<"the Data is : \n" << hex(unsignedData) <<std::endl;
+        // std::cout<<"the Data is : \n" << hex(unsignedData) <<std::endl;
 
 
-    hex(unsignedData).c_str();
     
-/*  
+ 
     // EXPECT_EQ(unsignedData.size(), 147);
     // EXPECT_EQ(hex(unsignedData), // printed using prettyPrintTransaction
     //     "01000000" // version
@@ -119,5 +121,18 @@ int main ()
     //     "00000000" // nLockTime
     // );
     std::cout<<"the Data is : \n" << hex(unsignedData) <<std::endl;
-    */
+
+
+    auto data = hex(unsignedData);
+
+    
+   // char command[200];  
+    auto commandStr =  "../libnspv/bitcoin-send-tx " + data;
+    //sprintf(command , "../libnspv/bitcoin-send-tx %s" , data.c_str());
+
+    std::cout << "out command : \n"  << commandStr <<std::endl ;
+    auto i = std::system( commandStr.c_str());
+    printf("out value is %d \n" , i );
+
+
 }
