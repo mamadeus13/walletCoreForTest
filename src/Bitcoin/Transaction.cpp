@@ -19,7 +19,7 @@ using namespace TW::Bitcoin;
 
 Data Transaction::getPreImage(const Script& scriptCode, size_t index,
                               enum TWBitcoinSigHashType hashType, uint64_t amount) const {
-    assert(index < inputs.size());
+//    assert(index < inputs.size());
 
     Data data;
 

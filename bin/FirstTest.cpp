@@ -122,24 +122,25 @@ int main ()
 
 
     auto coin = TWCoinTypeBitcoin;
-    auto ownAddress = "bc1q7yqq7l97pq9ra2f2gkf9s54y49re65ydgydy35";
-    auto ownPrivateKey = "f92378e54fc4e42091e3e508e604dc9a259ff4abe441c3d04b8f8ee97dc4540b";
+    auto ownAddress = "bc1q0d43anc6lkd52yjrw2f3qfl27tan29k8ukryd2";
+    auto ownPrivateKey = "a182e53e814f87e376ced3f3bd845f2e50758e55558b3bf49fc6d5e2fe9ef095";
     auto toAddress0 = "bc1qphxqjzcq58eepq0s4w80ucxwg3n7d4hqxty5wn";
     auto toAddress1 = "bc1q0d43anc6lkd52yjrw2f3qfl27tan29k8ukryd2";
-    auto utxo0Amount = 274'221;
-    auto toAmount0 = 174'221;
+    auto utxo0Amount = 257171;
+    auto toAmount0 = 227171;
     auto toAmount1 = 99'328;
 
     auto unsignedTx = Transaction(1, 0);
 
-    auto hash0 = parse_hex("388b2d6d838db6e495a1eb1e31c95be09c7eb6dfc84ab3a43571ac7a230e2cb7");
+    auto hash0 = parse_hex("6a1a9ea47c62ee2a14205850018936c53a6b08a290b8af6d83224975a1f859e8");
     std::reverse(hash0.begin(), hash0.end());
     auto outpoint0 = TW::Bitcoin::OutPoint(hash0, 0);//44 or zero for fucking crash 
-    auto mmdScript =  Script(parse_hex("0014f1000f7cbe080a3ea92a45925852a4a9479d508d"));
-    unsignedTx.inputs.emplace_back(outpoint0,mmdScript, 0); //zero to UNINT32_MAX 
+    auto mmdScript =  Script(parse_hex("00147b6b1ecf1afd9b45124372931027eaf2fb3516c7"));
+    std::cout << "is P2WPKH : "  << mmdScript.isPayToWitnessPublicKeyHash() << std::endl ;
+    unsignedTx.inputs.emplace_back(outpoint0,mmdScript, UINT32_MAX); //zero to UNINT32_MAX 
 
     auto lockingScript0 = Script::lockScriptForAddress(toAddress0, coin);
-    // unsignedTx.outputs.push_back(TransactionOutput(toAmount0, lockingScript0));
+    unsignedTx.outputs.push_back(TransactionOutput(toAmount0, lockingScript0));
     // auto lockingScript1 = Script::lockScriptForAddress(toAddress1, coin);
     // unsignedTx.outputs.push_back(TransactionOutput(toAmount1, lockingScript1));
     // change
@@ -183,7 +184,7 @@ int main ()
 
     auto redeemScript0 = Script::buildPayToWitnessPublicKeyHash(keyHashIn0);
     // EXPECT_EQ(hex(redeemScript0.bytes), "76a9145c74be45eb45a3459050667529022d9df8a1ecff88ac");
-
+    std::cout << "redeemScript0 :  \n" <<  hex(redeemScript0.bytes) <<std::endl ; 
     auto hashType = TWBitcoinSigHashType::TWBitcoinSigHashTypeAll;
     std::cout << "priviousoutputIndx  : " << unsignedTx.inputs[0].previousOutput.index << std::endl; 
     Data sighash = unsignedTx.getSignatureHash(redeemScript0, unsignedTx.inputs[0].previousOutput.index,
@@ -195,10 +196,11 @@ int main ()
     
     // add witness stack
     unsignedTx.inputs[0].scriptWitness.push_back(sig);
-    unsignedTx.inputs[0].scriptWitness.push_back(pubkey.bytes);
+    // unsignedTx.inputs[0].scriptWitness.push_back(pubkey.bytes);
+    unsignedTx.inputs[0].encodeWitness(sig);
 
     unsignedData.clear();
-    unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::Segwit);
+    unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::IfHasWitness);
     // EXPECT_EQ(unsignedData.size(), 254);
     // // https://blockchair.com/litecoin/transaction/9e3fe98565a904d2da5ec1b3ba9d2b3376dfc074f43d113ce1caac01bf51b34c
     // EXPECT_EQ(hex(unsignedData), // printed using prettyPrintTransaction
@@ -218,15 +220,16 @@ int main ()
     // );
 
 
-
+    // unsignedTx.sign
 
 
     auto data = hex(unsignedData);
 
+    std::cout << data << std::endl ; 
     
    // char command[200];  
     auto commandStr =  "../libnspv/bitcoin-send-tx " + data;
-    //sprintf(command , "../libnspv/bitcoin-send-tx %s" , data.c_str());
+    // sprintf(command , "../libnspv/bitcoin-send-tx %s" , data.c_str());
 
     std::cout << "out command : \n"  << commandStr <<std::endl ;
     auto i = std::system( commandStr.c_str());
