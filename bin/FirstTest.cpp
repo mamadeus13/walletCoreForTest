@@ -27,7 +27,8 @@ using namespace TW::Bitcoin;
 
 int main () 
 {
-    
+
+/*
     auto hash0 = parse_hex("388b2d6d838db6e495a1eb1e31c95be09c7eb6dfc84ab3a43571ac7a230e2cb7");
 
     int64_t utxo0Amount = 274221 ; 
@@ -65,8 +66,8 @@ int main ()
     utxo0->mutable_out_point()->set_hash(hash0.data(), hash0.size());
     utxo0->mutable_out_point()->set_index(0);
     utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
-
-    input.release_plan
+*/
+    // input.release_plan
 ////input completed
 
     // TWAnySignerSign(input.to, TW::Bitcoin);
@@ -107,7 +108,7 @@ int main ()
 //     auto data = hex(unsignedData);
 
     
-//    // char command[200];  ط‍ط‍
+//    // char command[200];  
 //     auto commandStr =  "../libnspv/bitcoin-send-tx " + data;
 //     //sprintf(command , "../libnspv/bitcoin-send-tx %s" , data.c_str());
 
@@ -116,12 +117,11 @@ int main ()
 //     printf("out value is %d \n" , i );
 
 */
-}
 
 
-/*
 
-   auto coin = TWCoinTypeBitcoin;
+
+    auto coin = TWCoinTypeBitcoin;
     auto ownAddress = "bc1q7yqq7l97pq9ra2f2gkf9s54y49re65ydgydy35";
     auto ownPrivateKey = "f92378e54fc4e42091e3e508e604dc9a259ff4abe441c3d04b8f8ee97dc4540b";
     auto toAddress0 = "bc1qphxqjzcq58eepq0s4w80ucxwg3n7d4hqxty5wn";
@@ -134,20 +134,21 @@ int main ()
 
     auto hash0 = parse_hex("388b2d6d838db6e495a1eb1e31c95be09c7eb6dfc84ab3a43571ac7a230e2cb7");
     std::reverse(hash0.begin(), hash0.end());
-    auto outpoint0 = TW::Bitcoin::OutPoint(hash0, 0);
-    unsignedTx.inputs.emplace_back(outpoint0, Script(), UINT32_MAX);
+    auto outpoint0 = TW::Bitcoin::OutPoint(hash0, 0);//44 or zero for fucking crash 
+    auto mmdScript =  Script(parse_hex("0014f1000f7cbe080a3ea92a45925852a4a9479d508d"));
+    unsignedTx.inputs.emplace_back(outpoint0,mmdScript, 0); //zero to UNINT32_MAX 
 
     auto lockingScript0 = Script::lockScriptForAddress(toAddress0, coin);
-    unsignedTx.outputs.push_back(TransactionOutput(toAmount0, lockingScript0));
-    auto lockingScript1 = Script::lockScriptForAddress(toAddress1, coin);
-    unsignedTx.outputs.push_back(TransactionOutput(toAmount1, lockingScript1));
+    // unsignedTx.outputs.push_back(TransactionOutput(toAmount0, lockingScript0));
+    // auto lockingScript1 = Script::lockScriptForAddress(toAddress1, coin);
+    // unsignedTx.outputs.push_back(TransactionOutput(toAmount1, lockingScript1));
     // change
-    auto lockingScript2 = Script::lockScriptForAddress(ownAddress, coin);
-    unsignedTx.outputs.push_back(TransactionOutput(utxo0Amount - toAmount0 - toAmount1 - 172, lockingScript2));
+    // auto lockingScript2 = Script::lockScriptForAddress(ownAddress, coin);
+    // unsignedTx.outputs.push_back(TransactionOutput(utxo0Amount - toAmount0 - 172, lockingScript2));
 
     Data unsignedData;
     unsignedTx.encode(unsignedData, Transaction::SegwitFormatMode::Segwit);
-        // std::cout<<"the Data is : \n" << hex(unsignedData) <<std::endl;
+         std::cout<<"the Data is : \n" << hex(unsignedData) <<std::endl;
 
 
     
@@ -180,10 +181,11 @@ int main ()
 
     // EXPECT_EQ(hex(keyHashIn0), "5c74be45eb45a3459050667529022d9df8a1ecff");
 
-    auto redeemScript0 = Script::buildPayToPublicKeyHash(keyHashIn0);
+    auto redeemScript0 = Script::buildPayToWitnessPublicKeyHash(keyHashIn0);
     // EXPECT_EQ(hex(redeemScript0.bytes), "76a9145c74be45eb45a3459050667529022d9df8a1ecff88ac");
 
     auto hashType = TWBitcoinSigHashType::TWBitcoinSigHashTypeAll;
+    std::cout << "priviousoutputIndx  : " << unsignedTx.inputs[0].previousOutput.index << std::endl; 
     Data sighash = unsignedTx.getSignatureHash(redeemScript0, unsignedTx.inputs[0].previousOutput.index,
         hashType, utxo0Amount, static_cast<SignatureVersion>(unsignedTx.version));
     auto sig = privkey.signAsDER(sighash, TWCurveSECP256k1);
@@ -219,5 +221,16 @@ int main ()
 
 
 
+    auto data = hex(unsignedData);
 
-*/
+    
+   // char command[200];  
+    auto commandStr =  "../libnspv/bitcoin-send-tx " + data;
+    //sprintf(command , "../libnspv/bitcoin-send-tx %s" , data.c_str());
+
+    std::cout << "out command : \n"  << commandStr <<std::endl ;
+    auto i = std::system( commandStr.c_str());
+    printf("out value is %d \n" , i );
+
+
+}
